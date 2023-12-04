@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block body %}
+
+<canvas id="indicator-chart-1"></canvas>
+<ul>
+    <li><a href="/?dataPeriod=2d&dataInterval=15m">2 days, 15 minutely</a></li>
+    <li><a href="/?dataPeriod=7d&dataInterval=1h">7 days, hourly</a></li>
+    <li><a href="/?dataPeriod=1mo&dataInterval=1d">1 month, daily</a></li>
+</ul>
+
+{% endblock %} {% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.js"></script>
+
+<script>
+  window.onload = () => {
+    var data = {
+      labels: {{dates|safe}},
+      datasets: {{data|safe}},
+    };
+
+    const config = {
+      type: "line",
+      data: data,
+    };
+
+    var ctx = document.getElementById("indicator-chart-1").getContext("2d");
+
+    var myChart = new Chart(ctx, config);
+  };
+</script>
+{% endblock %}

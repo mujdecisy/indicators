@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mujdecisy-indicators</title>
+
+    {% block head %}
+    {% endblock %}
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .main-container {
+            min-width: 360px;
+            width: 60%;
+            padding-top: 3rem;
+            margin: 0px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        {% block body %}
+        {% endblock %}
+    </div>
+
+    {% block script %}
+    {% endblock %}
+</body>
+</html>
