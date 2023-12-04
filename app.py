@@ -7,6 +7,8 @@ import os
 app = Flask(__name__)
 MODE = os.environ.get("APP_MODE", "debug")
 
+print(f"MODE = {MODE}")
+
 app.config['BASIC_AUTH_USERNAME'] = os.environ.get("APP_BA_USERNAME", "")
 app.config['BASIC_AUTH_PASSWORD'] = os.environ.get("APP_BA_PASSWORD", "")
 
