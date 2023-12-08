@@ -1,31 +1,65 @@
 {% extends 'base.html' %} {% block body %}
 
-<canvas id="indicator-chart-1"></canvas>
-<ul>
-    <li><a href="/?dataPeriod=2d&dataInterval=15m">2 days, 15 minutely</a></li>
-    <li><a href="/?dataPeriod=7d&dataInterval=1h">7 days, hourly</a></li>
-    <li><a href="/?dataPeriod=1mo&dataInterval=1d">1 month, daily</a></li>
-    <li><a href="/?dataPeriod=3mo&dataInterval=1d">3 months, daily</a></li>
-</ul>
+<div id="indicator-chart-1"></div>
+
+<div style="display: flex; justify-content: space-between;">
+  <a href="/?{{prev_url_params}}"> << </a>
+  <a href="/?{{zout_url_params}}"> -- </a>
+  <a href="/"> oo </a>
+  <a href="/?{{zin_url_params}}"> ++ </a>
+  <a href="/?{{next_url_params}}"> >> </a>
+</div>
+
 
 {% endblock %} {% block script %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
 <script>
+  function dateFormat(diti) {
+    return diti.toLocaleString('en-us',{month:'short', day:'numeric', hour: 'numeric', minute: 'numeric'})
+  }
+
   window.onload = () => {
-    var data = {
-      labels: {{dates|safe}},
-      datasets: {{data|safe}},
-    };
+    let ditiList = {{diti_list|safe}}
+    let dataList = {{data_list|safe}}
 
-    const config = {
-      type: "line",
-      data: data,
-    };
+    let config = {
+      chart : {
+        type: "line"
+      },
+      xAxis: {
+        visible: false,
+        categories: ditiList.map(e=>dateFormat(new Date(e)))
+      },
+      yAxis: {
+        visible: false
+      },
+      tooltip: {
+        shared: true,
+        crosshairs: true
+      },
+      title: {
+        text: `${new Date(ditiList[0]).toLocaleString()} --- ${new Date(ditiList[ditiList.length-1]).toLocaleString()}`
+      },
+      plotOptions: {
+        series: {
+            cursor: 'pointer',
+            className: 'popup-on-click',
+            marker: {
+                enabled: false
+            }
+        }
+      },
+      series: dataList.map(e=>({
+        name: e.name,
+        data: e.data.map(e1=>parseFloat(e1.toFixed(3)))
+      }))
+    }
 
-    var ctx = document.getElementById("indicator-chart-1").getContext("2d");
+    console.log(config)
 
-    var myChart = new Chart(ctx, config);
+    Highcharts.chart('indicator-chart-1', config)
   };
 </script>
 {% endblock %}
