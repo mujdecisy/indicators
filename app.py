@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request
 from flask_basicauth import BasicAuth
 import os
 import diti
@@ -18,6 +18,9 @@ app.config["BASIC_AUTH_PASSWORD"] = os.environ.get("APP_BA_PASSWORD", "")
 
 basic_auth = BasicAuth(app)
 
+@app.errorhandler(Exception)
+def error_handler(err):
+    return render_template("error.html", error_message = str(err))
 
 @app.route("/")
 @basic_auth.required
@@ -39,11 +42,12 @@ def index():
     elif diff > 2 * 24:
         data_interval = "1h"
     else:
-        data_interval = "15T"
+        data_interval = "15m"
 
     diti_list, data_dict = prepare_index_page_data(
         from_diti, to_diti, data_interval, data_type
     )
+
     data_list = [{"name": k, "data": v} for k, v in data_dict.items()]
 
     from_dt = datetime.fromisoformat(from_diti)

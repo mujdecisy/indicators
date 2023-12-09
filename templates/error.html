@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div style="display: flex; flex-direction: column; align-items: center;">
+    <p>{{ error_message }}</p>
+    <button style="margin: 50px auto;" onclick="window.history.go(-1); return false;">GO BACK</button>
+</div>
+    
+{% endblock %}

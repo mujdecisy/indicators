@@ -24,6 +24,17 @@
     let ditiList = {{diti_list|safe}}
     let dataList = {{data_list|safe}}
 
+    let startDate = new Date(ditiList[0])
+    let endDate = new Date(ditiList[ditiList.length-1])
+    console.log(ditiList)
+
+    let diff = (endDate-startDate)/1000/60/60
+    if (diff < 48) {
+      diff = diff.toFixed(2) + "h"
+    } else {
+      diff = (diff/24).toFixed(2) + "d"
+    }
+
     let config = {
       chart : {
         type: "line"
@@ -40,7 +51,7 @@
         crosshairs: true
       },
       title: {
-        text: `${new Date(ditiList[0]).toLocaleString()} --- ${new Date(ditiList[ditiList.length-1]).toLocaleString()}`
+        text: `${startDate.toISOString()} </br> ${diff} </br> ${endDate.toISOString()}`
       },
       plotOptions: {
         series: {

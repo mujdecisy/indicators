@@ -31,6 +31,8 @@ def prepare_index_page_data(
         end=datetime.fromisoformat(to_diti),
         interval=data_interval,
     )
+    if len(data) < 1:
+        raise ValueError(f"No data found between [{from_diti}] - [{to_diti}]")
 
     data = data[
         [
@@ -44,10 +46,14 @@ def prepare_index_page_data(
     if data_interval == "1h":
         data.index = data.index.floor("H")
         data = data.groupby(data.index).mean()
-    elif data_interval == "15m":
+    elif data_interval == "15T":
         data.index = data.index.floor("15T")
         data = data.groupby(data.index).mean()
     data = data.dropna()
+    if len(data) < 1:
+        raise ValueError(f"No data found between [{from_diti}] - [{to_diti}]")
+
+
     data[(data_type, "GC=FxTRY=X")] = (
         data[(data_type, "GC=F")] * data[(data_type, "TRY=X")]
     )
