@@ -1,0 +1,15 @@
+{% extends 'base.html' %} 
+
+{% block body %}
+{% include 'chart.html' %}
+
+<div style="margin-top: 50px; display: flex; justify-content: center;">
+    <a href="/">Home</a>
+</div>
+
+{% endblock %}
+
+
+{% block script %}
+{% include 'chart.script.html' %}
+{% endblock %}

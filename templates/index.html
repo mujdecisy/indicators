@@ -1,76 +1,18 @@
-{% extends 'base.html' %} {% block body %}
+{% extends 'base.html' %} 
 
-<div id="indicator-chart-1"></div>
+{% block body %}
+{% include 'chart.html' %}
 
-<div style="display: flex; justify-content: space-between;">
-  <a href="/?{{prev_url_params}}"> << </a>
-  <a href="/?{{zout_url_params}}"> -- </a>
-  <a href="/"> oo </a>
-  <a href="/?{{zin_url_params}}"> ++ </a>
-  <a href="/?{{next_url_params}}"> >> </a>
+<div style="margin-top: 50px; display: flex; justify-content: space-between;">
+    <a href="/assets/XU100.IS">BIST</a>
+    <a href="/assets/BTC-USD">BTC</a>
+    <a href="/assets/GC=F">GOLD</a>
+    <a href="/assets/TRY=X">USD</a>
 </div>
 
+{% endblock %}
 
-{% endblock %} {% block script %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-<script>
-  function dateFormat(diti) {
-    return diti.toLocaleString('en-us',{month:'short', day:'numeric', hour: 'numeric', minute: 'numeric'})
-  }
-
-  window.onload = () => {
-    let ditiList = {{diti_list|safe}}
-    let dataList = {{data_list|safe}}
-
-    let startDate = new Date(ditiList[0])
-    let endDate = new Date(ditiList[ditiList.length-1])
-    console.log(ditiList)
-
-    let diff = (endDate-startDate)/1000/60/60
-    if (diff < 48) {
-      diff = diff.toFixed(2) + "h"
-    } else {
-      diff = (diff/24).toFixed(2) + "d"
-    }
-
-    let config = {
-      chart : {
-        type: "line"
-      },
-      xAxis: {
-        visible: false,
-        categories: ditiList.map(e=>dateFormat(new Date(e)))
-      },
-      yAxis: {
-        visible: false
-      },
-      tooltip: {
-        shared: true,
-        crosshairs: true
-      },
-      title: {
-        text: `${startDate.toISOString()} </br> ${diff} </br> ${endDate.toISOString()}`
-      },
-      plotOptions: {
-        series: {
-            cursor: 'pointer',
-            className: 'popup-on-click',
-            marker: {
-                enabled: false
-            }
-        }
-      },
-      series: dataList.map(e=>({
-        name: e.name,
-        data: e.data.map(e1=>parseFloat(e1.toFixed(3)))
-      }))
-    }
-
-    console.log(config)
-
-    Highcharts.chart('indicator-chart-1', config)
-  };
-</script>
+{% block script %}
+{% include 'chart.script.html' %}
 {% endblock %}
