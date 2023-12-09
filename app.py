@@ -6,7 +6,7 @@ import diti
 from datetime import datetime
 import urllib
 
-from helper import get_initial_filters, prepare_index_page_data
+from helper import get_initial_filters, prepare_chart_actions, prepare_index_page_data
 
 app = Flask(__name__)
 MODE = os.environ.get("APP_MODE", "debug")
@@ -55,55 +55,16 @@ def index():
 
     step_size = int(diff / 4)
 
-    prev_from_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
-        ).isoformat()
-    )
-    prev_to_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
-        ).isoformat()
-    )
-    next_from_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
-        ).isoformat()
-    )
-    next_to_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
-        ).isoformat()
-    )
-    zin_from_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
-        ).isoformat()
-    )
-    zin_to_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
-        ).isoformat()
-    )
-    zout_from_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
-        ).isoformat()
-    )
-    zout_to_diti = urllib.parse.quote_plus(
-        diti.diti_op(
-            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
-        ).isoformat()
-    )
+    chart_actions = prepare_chart_actions(from_dt, to_dt, step_size)
 
     return render_template(
         "index.html",
         diti_list=json.dumps(diti_list),
         data_list=json.dumps(data_list),
-        prev_url_params=f"fDiti={prev_from_diti}&tDiti={prev_to_diti}",
-        next_url_params=f"fDiti={next_from_diti}&tDiti={next_to_diti}",
-        zin_url_params=f"fDiti={zin_from_diti}&tDiti={zin_to_diti}",
-        zout_url_params=f"fDiti={zout_from_diti}&tDiti={zout_to_diti}",
+        prev_url_params=f"fDiti={chart_actions.prev.from_}&tDiti={chart_actions.prev.to}",
+        next_url_params=f"fDiti={chart_actions.next.from_}&tDiti={chart_actions.next.to}",
+        zin_url_params=f"fDiti={chart_actions.zoomin.from_}&tDiti={chart_actions.zoomin.to}",
+        zout_url_params=f"fDiti={chart_actions.zoomout.from_}&tDiti={chart_actions.zoomout.to}",
         to_diti=to_diti,
     )
 

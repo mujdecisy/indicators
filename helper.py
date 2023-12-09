@@ -2,7 +2,21 @@ import yfinance as yf
 from datetime import datetime
 import diti
 from typing import Tuple
+import urllib
 
+class ActionDiti:
+    from_: str
+    to: str
+
+    def __init__(self, from_, to) -> None:
+        self.from_ = from_
+        self.to = to
+
+class ChartActions:
+    prev: ActionDiti
+    next_: ActionDiti
+    zoomin: ActionDiti
+    zoomout: ActionDiti
 
 def get_initial_filters() -> Tuple[str, str]:
     now = diti.diti_op(
@@ -89,3 +103,54 @@ def prepare_index_page_data(
     data = {index_mapping[k[1]]["name"]: v for k, v in data.to_dict(orient="list").items()}
 
     return ditis, data
+
+
+def prepare_chart_actions(from_dt: datetime, to_dt: datetime, step_size: int) -> ChartActions:
+    prev_from_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
+        ).isoformat()
+    )
+    prev_to_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
+        ).isoformat()
+    )
+    next_from_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
+        ).isoformat()
+    )
+    next_to_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
+        ).isoformat()
+    )
+    zin_from_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
+        ).isoformat()
+    )
+    zin_to_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
+        ).isoformat()
+    )
+    zout_from_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            from_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, -step_size)]
+        ).isoformat()
+    )
+    zout_to_diti = urllib.parse.quote_plus(
+        diti.diti_op(
+            to_dt, [diti.DitiOpAdd(diti.DitiParts.HOURS, step_size)]
+        ).isoformat()
+    )
+
+    chart_actions = ChartActions()
+    chart_actions.prev = ActionDiti(prev_from_diti, prev_to_diti)
+    chart_actions.next = ActionDiti(next_from_diti, next_to_diti)
+    chart_actions.zoomin = ActionDiti(zin_from_diti, zin_to_diti)
+    chart_actions.zoomout = ActionDiti(zout_from_diti, zout_to_diti)
+
+    return chart_actions
